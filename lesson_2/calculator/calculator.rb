@@ -1,4 +1,13 @@
-def prompt(message)
+require 'yaml'
+MESSAGES = YAML.load_file('calculator_messages.yml')
+LANGUAGE = 'en'
+
+def message(message, lang='en')
+  MESSAGES[lang][message]  
+end
+
+def prompt(key)
+  message = message(key, LANGUAGE)
   puts("=> #{message}")
 end
 
@@ -28,43 +37,43 @@ def operation_to_message(op)
   word
 end
 
-prompt("Welcome to Calculator! Enter your name:")
+prompt('welcome')
 
 name = ''
 loop do
   name = gets.chomp
 
   if name.empty?
-    prompt("Make sure to use a valid name.")
+    prompt('valid_name')
   else
     break
   end
 end
 
-prompt("Hi #{name}!")
+prompt('"Hi #{name}!"')
 
 loop do # main loop
   number1 = ''
   loop do
-    prompt("What's the first number?")
+    prompt('first_number')
     number1 = gets.chomp
 
     if number?(number1)
       break
     else
-      prompt("Hmmm... that doesn't look like a valid number")
+      prompt('invalid_number')
     end
   end
 
   number2 = ''
   loop do
-    prompt("What's the second number?")
+    prompt('second_number')
     number2 = gets.chomp
 
     if number?(number2)
       break
     else
-      prompt("Hmmm... that doesn't look like a valid number")
+      prompt('invalid_number')
     end
   end
 
@@ -85,7 +94,7 @@ loop do # main loop
     if %w(1 2 3 4).include?(operator)
       break
     else
-      prompt("Must choose 1, 2, 3 or 4")
+      prompt('choose_number')
     end
   end
 
@@ -104,9 +113,9 @@ loop do # main loop
 
   prompt("The result is #{result}")
 
-  prompt("Do you want to perform another calculation? (Y to calculate again)")
+  prompt('continue')
   answer = gets.chomp
   break unless answer.downcase.start_with?('y')
 end
 
-prompt("Thank you for using the calculator. Good bye!")
+prompt('good_bye')
