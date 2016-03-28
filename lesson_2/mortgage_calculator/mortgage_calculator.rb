@@ -20,11 +20,8 @@ loop do
   loop do
     loan_amount = gets.chomp
 
-    if loan_amount.empty? || loan_amount.to_f < 0
-      prompt('valid_number')
-    else
-      break
-    end
+    prompt('valid_number') if loan_amount.empty? || loan_amount.to_f < 0
+    break
   end
 
   prompt('interest_rate')
@@ -32,11 +29,8 @@ loop do
   loop do
     interest_rate = gets.chomp
 
-    if interest_rate.empty? || interest_rate.to_f < 0
-      prompt('valid_number')
-    else
-      break
-    end
+    prompt('valid_number') if interest_rate.empty? || interest_rate.to_f < 0
+    break
   end
 
   prompt('loan_duration')
@@ -44,11 +38,8 @@ loop do
   loop do
     years = gets.chomp
 
-    if years.empty? || years.to_f < 0
-      prompt('valid_number')
-    else
-      break
-    end
+    prompt('valid_number') if years.empty? || years.to_f < 0
+    break
   end
 
   annual_interest_rate = interest_rate.to_f() / 100
