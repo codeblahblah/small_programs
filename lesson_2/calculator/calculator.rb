@@ -58,11 +58,9 @@ loop do # main loop
     prompt('first_number')
     number1 = gets.chomp
 
-    if number?(number1)
-      break
-    else
-      prompt('invalid_number')
-    end
+    
+    break if number?(number1)
+    prompt('invalid_number')
   end
 
   number2 = ''
@@ -70,11 +68,9 @@ loop do # main loop
     prompt('second_number')
     number2 = gets.chomp
 
-    if number?(number2)
-      break
-    else
-      prompt('invalid_number')
-    end
+    
+    break if number?(number2)
+    prompt('invalid_number')
   end
 
   operator_prompt = <<-MSG
@@ -91,11 +87,8 @@ loop do # main loop
   loop do
     operator = gets.chomp
 
-    if %w(1 2 3 4).include?(operator)
-      break
-    else
-      prompt('choose_number')
-    end
+    break if %w(1 2 3 4).include?(operator)
+    prompt('choose_number')
   end
 
   prompt("#{operation_to_message(operator)} the two numbers...")
