@@ -1,0 +1,10 @@
+en:
+  welcome: "Welcome to Mortgage Calculator!"
+  valid_name: "Make sure to end a valid name."
+  loan_amount: "Please enter the loan amount."
+  valid_number: "Must enter positive number."
+  interest_rate: "Please enter the Annual Percentage Rate (APR). Example: 5 for 5% or 2.5 for 2.5%."
+  loan_duration: "What is the loan duration (in years)?"
+  continue: "Another calculation?"
+  thank_you: "Thank you for using the Mortgage Calculator!"
+  good_bye: "Good bye!"

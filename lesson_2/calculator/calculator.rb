@@ -1,13 +1,13 @@
 require 'yaml'
 MESSAGES = YAML.load_file('calculator_messages.yml')
-LANGUAGE = 'en'
+LANGUAGE = 'en'.freeze
 
-def message(message, lang='en')
-  MESSAGES[lang][message]  
+def get_message(message, lang = 'en')
+  MESSAGES[lang][message]
 end
 
-def prompt(key)
-  message = message(key, LANGUAGE)
+def prompt(message, is_key = true)
+  message = get_message(message, "#{LANGUAGE}") if is_key
   puts("=> #{message}")
 end
 
@@ -25,13 +25,13 @@ end
 
 def operation_to_message(op)
   word = case op
-           when '1'
+         when '1'
              'Adding'
-           when '2'
+         when '2'
              'Subtracting'
-           when '3'
+         when '3'
              'Multiplying'
-           when '4'
+         when '4'
              'Dividing'
          end
   word
@@ -58,7 +58,6 @@ loop do # main loop
     prompt('first_number')
     number1 = gets.chomp
 
-    
     break if number?(number1)
     prompt('invalid_number')
   end
@@ -68,7 +67,6 @@ loop do # main loop
     prompt('second_number')
     number2 = gets.chomp
 
-    
     break if number?(number2)
     prompt('invalid_number')
   end
@@ -81,7 +79,7 @@ loop do # main loop
     4) divide
   MSG
 
-  prompt(operator_prompt)
+  prompt(operator_prompt, false)
 
   operator = ''
   loop do
@@ -91,7 +89,7 @@ loop do # main loop
     prompt('choose_number')
   end
 
-  prompt("#{operation_to_message(operator)} the two numbers...")
+  prompt("#{operation_to_message(operator)} the two numbers...", false)
 
   result = case operator
            when '1'
@@ -104,7 +102,7 @@ loop do # main loop
              number1.to_f / number2.to_f
   end
 
-  prompt("The result is #{result}")
+  prompt("The result is #{result}", false)
 
   prompt('continue')
   answer = gets.chomp
