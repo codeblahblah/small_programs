@@ -152,8 +152,8 @@ munsters = {
 
 munsters.each do |_, info| 
   case info["age"]
-  when 0..17 then info["age_group"] = "kid"
-  when 18..64 then info["age_group"] = "adult"
+  when 0..18 then info["age_group"] = "kid"
+  when 18..65 then info["age_group"] = "adult"
   else info["age_group"] = "senior"
   end
 end
