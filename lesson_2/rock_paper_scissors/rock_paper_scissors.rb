@@ -12,7 +12,8 @@ end
 
 def get_winner(player, computer)
   return :player if win?(player, computer)
-  :computer
+  return :computer if win?(computer, player)
+  :tie
 end
 
 def win?(first, second)
