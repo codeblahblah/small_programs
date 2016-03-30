@@ -10,26 +10,29 @@ def prompt(message)
   puts("=> #{message}")
 end
 
+def get_winner(player, computer)
+  return :player if win?(player, computer)
+  :computer
+end
+
 def win?(first, second)
-  (first == 'rock' && second == 'scissors') ||
-    (first == 'rock' && second == 'lizard') ||
-    (first == 'paper' && second == 'rock') ||
-    (first == 'paper' && second == 'spock') ||
-    (first == 'scissors' && second == 'paper') ||
-    (first == 'scissors' && second == 'lizard') ||
-    (first == 'spock' && second == 'scissors') ||
-    (first == 'spock' && second == 'rock') ||
-    (first == 'lizard' && second == 'spock') ||
-    (first == 'lizard' && second == 'paper')
+    (first == 'rock') && %w(scissors lizard).include?(second)    ||
+    (first == 'paper') && %w(rock spock).include?(second)      ||
+    (first == 'scissors') && %w(paper lizard).include?(second) ||
+    (first == 'spock') && %w(scissors rock).include?(second)   ||
+    (first == 'lizard') && %w(spock paper).include?(second)
 end
 
 def display_results(player, computer)
-  if win?(player, computer)
-    "You won!"
-  elsif win?(computer, player)
-    "Computer won!"
-  else
-    "It's a tie!"
+  winner = get_winner(player, computer)
+
+  case winner
+  when :player
+    prompt "You won!"
+  when :computer
+    prompt "Computer won!"
+  when :tie
+    prompt "It's a tie!"
   end
 end
 
@@ -39,7 +42,7 @@ computer_wins = 0
 loop do
   choice = ''
   loop do
-    prompt("Choose one: #{VALID_CHOICES.map { |k, v| "#{v} (#{k})" }.join(', ')}")
+    prompt("Choose one: #{VALID_CHOICES.map { |choice, abbreviation| "#{choice} (#{abbreviation})" }.join(', ')}")
     choice = VALID_CHOICES[gets.chomp.to_sym]
 
     break if VALID_CHOICES.values.include?(choice)
@@ -50,10 +53,10 @@ loop do
 
   prompt("You chose: #{choice}; Computer chose: #{computer_choice}")
 
-  wins += 1 if display_results(choice, computer_choice) == "You won!"
-  computer_wins += 1 if display_results(choice, computer_choice) == "Computer won!"
+  wins += 1 if get_winner(choice, computer_choice) == :player
+  computer_wins += 1 if get_winner(choice, computer_choice) == :computer
 
-  prompt(display_results(choice, computer_choice))
+  display_results(choice, computer_choice)
 
   if wins == 5 || computer_wins == 5
     prompt("We have a winner. Final score: #{wins}; Computer: #{computer_wins}")
