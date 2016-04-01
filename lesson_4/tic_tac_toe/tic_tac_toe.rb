@@ -86,6 +86,9 @@ def someone_won?(brd)
   !!detect_winner(brd)
 end
 
+wins = 0
+computer_wins = 0
+
 loop do
   board = initialize_board
 
@@ -93,9 +96,11 @@ loop do
     display_board(board)
 
     player_places_piece!(board)
+    wins += 1 if detect_winner(board) == 'Player'
     break if someone_won?(board) || board_full?(board)
 
     computer_places_piece!(board)
+    computer_wins += 1 if detect_winner(board) == 'Computer'
     break if someone_won?(board) || board_full?(board)
   end
 
@@ -105,6 +110,13 @@ loop do
     prompt "#{detect_winner(board)} won!"
   else
     prompt "It's a tie!"
+  end
+
+  if wins == 5 || computer_wins == 5
+    prompt("We have a winner. Final score: #{wins}; Computer: #{computer_wins}")
+    break
+  else
+    prompt("The current score is: #{wins}; Computer: #{computer_wins}.")
   end
 
   prompt "Play again? (y or n)"
