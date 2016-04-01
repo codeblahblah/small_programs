@@ -1,3 +1,4 @@
+COMPUTER_MOVES_FIRST = true
 WINNING_LINES = [[1, 2, 3], [4, 5, 5], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                 [[1, 5, 9], [3, 5, 7]]              # diagonals
@@ -73,18 +74,18 @@ end
 def computer_places_piece!(brd)
   square = nil
 
-  # defense
-  WINNING_LINES.each do |line|
-    square = detect_threat(line, brd, PLAYER_MARKER)
-    break if square
-  end
-
   # offense
   if !square
     WINNING_LINES.each do |line|
       square = detect_threat(line, brd, COMPUTER_MARKER)
       break if square
     end
+  end
+
+  # defense
+  WINNING_LINES.each do |line|
+    square = detect_threat(line, brd, PLAYER_MARKER)
+    break if square
   end
 
   # just pick a square
@@ -119,6 +120,7 @@ computer_wins = 0
 
 loop do
   board = initialize_board
+  computer_places_piece!(board) if COMPUTER_MOVES_FIRST
 
   loop do
     display_board(board)
