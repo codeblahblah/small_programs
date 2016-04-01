@@ -62,8 +62,8 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
-def detect_threat(line, brd)
-  if brd.values_at(*line).count(PLAYER_MARKER) == 2
+def detect_threat(line, brd, marker)
+  if brd.values_at(*line).count(marker) == 2
     brd.select { |k, v| line.include?(k) && v == INITIAL_MARKER }.keys.first
   else
     nil
@@ -72,11 +72,22 @@ end
   
 def computer_places_piece!(brd)
   square = nil
+
+  # defense
   WINNING_LINES.each do |line|
-    square = detect_threat(line, brd)
+    square = detect_threat(line, brd, PLAYER_MARKER)
     break if square
   end
 
+  # offense
+  if !square
+    WINNING_LINES.each do |line|
+      square = detect_threat(line, brd, COMPUTER_MARKER)
+      break if square
+    end
+  end
+
+  # just pick a square
   if !square
     square = empty_squares(brd).sample
   end
