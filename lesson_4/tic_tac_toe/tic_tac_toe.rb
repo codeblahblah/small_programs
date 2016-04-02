@@ -1,4 +1,4 @@
-COMPUTER_MOVES_FIRST = true
+FIRST_MOVE = :choose # Can either be set to :choose, :computer or :player
 WINNING_LINES = [[1, 2, 3], [4, 5, 5], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                 [[1, 5, 9], [3, 5, 7]]              # diagonals
@@ -88,9 +88,11 @@ def computer_places_piece!(brd)
     break if square
   end
 
-  # just pick a square
-  if !square
-    square = empty_squares(brd).sample
+  # pick square #5
+  if !square && empty_squares(brd).include?(5)
+    square = 5
+  else
+    square = empty_squares(brd).sample # pick a random square
   end
 
   brd[square] = COMPUTER_MARKER
@@ -103,9 +105,9 @@ end
 def detect_winner(brd)
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count(PLAYER_MARKER) == 3
-      return 'Player'
+      return :player
     elsif brd.values_at(*line).count(COMPUTER_MARKER) == 3
-      return 'Computer'
+      return :computer
     end
   end
   nil
@@ -115,22 +117,41 @@ def someone_won?(brd)
   !!detect_winner(brd)
 end
 
+def place_piece!(brd, player)
+  if player == :player
+    player_places_piece!(brd)
+  else
+    computer_places_piece!(brd)
+  end
+end
+
+def alternate_player(player)
+  player == :computer ? :player : :computer 
+end
+
 wins = 0
 computer_wins = 0
+current_player = FIRST_MOVE
 
 loop do
   board = initialize_board
-  computer_places_piece!(board) if COMPUTER_MOVES_FIRST
+  puts current_player
+
+  while current_player == :choose
+    prompt "Would you like to play first? (y or n)"
+    answer = gets.chomp
+
+    if answer.downcase.start_with?('y') 
+      current_player = :player 
+    else 
+      current_player = :computer
+    end
+  end
 
   loop do
     display_board(board)
-
-    player_places_piece!(board)
-    wins += 1 if detect_winner(board) == 'Player'
-    break if someone_won?(board) || board_full?(board)
-
-    computer_places_piece!(board)
-    computer_wins += 1 if detect_winner(board) == 'Computer'
+    place_piece!(board, current_player)
+    current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
   end
 
@@ -138,6 +159,8 @@ loop do
 
   if someone_won?(board)
     prompt "#{detect_winner(board)} won!"
+    wins += 1 if detect_winner(board) == :player
+    computer_wins += 1 if detect_winner(board) == :computer
   else
     prompt "It's a tie!"
   end
