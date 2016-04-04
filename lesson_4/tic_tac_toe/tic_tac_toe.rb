@@ -1,18 +1,18 @@
-FIRST_MOVE = :choose # Can either be set to :choose, :computer or :player
-WINNING_LINES = [[1, 2, 3], [4, 5, 5], [7, 8, 9]] + # rows
+FIRST_MOVE = :computer # Can either be set to :choose, :computer or :player
+WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                 [[1, 5, 9], [3, 5, 7]]              # diagonals
-INITIAL_MARKER = ' '
-PLAYER_MARKER = 'X'
-COMPUTER_MARKER = 'O'
+INITIAL_MARKER = ' '.freeze
+PLAYER_MARKER = 'X'.freeze
+COMPUTER_MARKER = 'O'.freeze
 
 def prompt(msg)
   puts "=> #{msg}"
 end
 
-# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+# rubocop:disable Metrics/AbcSize
 def display_board(brd)
-  system 'clear'
+  system('clear') || system('cls')
   puts "You're a #{PLAYER_MARKER}. Computer is #{COMPUTER_MARKER}."
   puts "     |     |"
   puts "  #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}"
@@ -26,7 +26,7 @@ def display_board(brd)
   puts "  #{brd[7]}  |  #{brd[8]}  |  #{brd[9]}"
   puts "     |     |"
 end
-# rubocop:enable Metrics/MethodLength, Metrics/AbcSize
+# rubocop:enable Metrics/AbcSize
 
 def initialize_board
   new_board = {}
@@ -38,15 +38,10 @@ def empty_squares(brd)
   brd.keys.select { |num| brd[num] == INITIAL_MARKER }
 end
 
-# def joinor(arr, delimiter=', ', word='or')
-#   arr[-1] = "#{word} #{arr.last}" if arr.size > 1
-#   arr.join(delimiter)
-# end
-
 def joinor(arr, separator = ', ', joiner = 'or')
   result = ''
   arr.each_with_index do |num, index|
-    index >= arr.size - 1 ? result += "#{joiner} #{num}" : result += "#{num}#{separator}"
+    result += (index >= arr.size - 1) ? "#{joiner} #{num}" : "#{num}#{separator}"
   end
   result
 end
@@ -65,34 +60,39 @@ end
 
 def detect_threat(line, brd, marker)
   if brd.values_at(*line).count(marker) == 2
-    brd.select { |k, v| line.include?(k) && v == INITIAL_MARKER }.keys.first
+    brd.select { |square, mark| line.include?(square) && mark == INITIAL_MARKER }.keys.first
   else
     nil
   end
 end
-  
-def computer_places_piece!(brd)
+
+def strategy(brd, marker)
   square = nil
 
-  # offense
-  if !square
-    WINNING_LINES.each do |line|
-      square = detect_threat(line, brd, COMPUTER_MARKER)
-      break if square
-    end
+  WINNING_LINES.each do |line|
+    square = detect_threat(line, brd, marker)
+    break if square
   end
+  square
+end
+
+def computer_places_piece!(brd)
+  # offense
+  square = strategy(brd, COMPUTER_MARKER)
 
   # defense
-  WINNING_LINES.each do |line|
-    square = detect_threat(line, brd, PLAYER_MARKER)
-    break if square
+  unless square
+    square = strategy(brd, PLAYER_MARKER)
   end
 
   # pick square #5
-  if !square && empty_squares(brd).include?(5)
+  if empty_squares(brd).include?(5)
     square = 5
-  else
-    square = empty_squares(brd).sample # pick a random square
+  end
+
+  # pick a random square
+  unless square
+    square = empty_squares(brd).sample
   end
 
   brd[square] = COMPUTER_MARKER
@@ -126,30 +126,34 @@ def place_piece!(brd, player)
 end
 
 def alternate_player(player)
-  player == :computer ? :player : :computer 
+  player == :computer ? :player : :computer
 end
 
 wins = 0
 computer_wins = 0
 current_player = FIRST_MOVE
+answer = ''
 
 loop do
   board = initialize_board
-  puts current_player
 
-  while current_player == :choose
+  loop do
+    break if current_player != :choose
     prompt "Would you like to play first? (y or n)"
     answer = gets.chomp
-
-    if answer.downcase.start_with?('y') 
-      current_player = :player 
-    else 
-      current_player = :computer
-    end
+    break if answer.downcase.start_with?('y', 'n')
+    prompt "Sorry, that's not a valid choice."
   end
+
+  current_player = if answer.downcase.start_with?('y')
+                     :player
+                   else
+                     :computer
+                   end
 
   loop do
     display_board(board)
+
     place_piece!(board, current_player)
     current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
@@ -172,9 +176,16 @@ loop do
     prompt("The current score is: #{wins}; Computer: #{computer_wins}.")
   end
 
-  prompt "Play again? (y or n)"
-  answer = gets.chomp
-  break unless answer.downcase.start_with?('y')
+  loop do
+    prompt "Play again? (y or n)"
+    answer = gets.chomp
+    break if answer.downcase.start_with?('y', 'n')
+    prompt "Sorry, that's not a valid choice."
+  end
+
+  break if answer.downcase.start_with?('n')
+  current_player = :choose
+  answer = ''
 end
 
 prompt "Thanks for playing Tic Tac Toe! Good bye!"
