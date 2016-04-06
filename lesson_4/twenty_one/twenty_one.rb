@@ -1,4 +1,4 @@
-SUITS = [:hearts, :diamonds, :clubs, :spades]
+SUITS = [:hearts, :diamonds, :clubs, :spades].freeze
 RANKS = {
   ace: 11,
   two: 2,
@@ -13,7 +13,7 @@ RANKS = {
   jack: 10,
   queen: 10,
   king: 10
-}
+}.freeze
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -28,12 +28,9 @@ def deal_card(deck)
 end
 
 def show_hand(player_hand)
-  cards = ""
-  player_hand.each_with_index do |(suit, rank), index|
-    cards += player_hand[index].last.to_s
-    cards += ' and ' unless index >= player_hand.size - 1
-  end
-  cards
+  cards = player_hand.flatten - SUITS
+  cards[-1] = "and #{cards.last}" if cards.size > 1
+  cards.join(', ')
 end
 
 def score(hand)
@@ -53,10 +50,8 @@ def determine_winner(player_hand, dealer_hand)
 end
 
 loop do
-  # 1. Initialize deck
   deck = initialize_deck
 
-  # 2. Deal cards to player and dealer
   player_hand = []
   dealer_hand = []
 
@@ -68,7 +63,6 @@ loop do
   prompt("Dealer has: #{dealer_hand[0].last} and unknown card")
   prompt("You have: " + show_hand(player_hand))
 
-  # 3. Player turn: hit or stay
   answer = ''
   loop do
     prompt("Player's turn: hit(h) or stay(s)?")
@@ -81,7 +75,6 @@ loop do
   if busted?(player_hand)
     prompt("You have: " + show_hand(player_hand))
     prompt("Dealer has: " + show_hand(dealer_hand))
-    # probably end the game? or ask the user to play again?
     prompt "Player busted. Dealer wins!"
     prompt "Play again? (y or n)"
     answer = gets.chomp
@@ -89,8 +82,6 @@ loop do
   else
     puts "You chose to stay!" # if player didn't bust, must have stayed to get here
   end
-
-  prompt("Dealer's turn")
 
   loop do
     break if busted?(player_hand)
