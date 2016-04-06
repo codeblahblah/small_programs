@@ -29,21 +29,17 @@ end
 
 def show_hand(player_hand)
   cards = player_hand.flatten - SUITS
-  cards[-1] = "and #{cards.last}" if cards.size > 1
+  cards[-1] = "and #{cards.last}." if cards.size > 1
   cards.join(', ')
 end
 
 def score(hand)
-  hand.inject(0) { |total, (_suit, rank)| total += RANKS[rank] }
+  hand.inject(0) { |sum, (_suit, rank)| sum + RANKS[rank] }
 end
 
 def busted?(hand)
   score(hand) > 21
 end
-
-# def display_result()
-
-# end
 
 def determine_winner(player_hand, dealer_hand)
   score(player_hand) < score(dealer_hand) ? :player : :dealer
@@ -51,9 +47,9 @@ end
 
 loop do
   deck = initialize_deck
-
   player_hand = []
   dealer_hand = []
+  answer = ''
 
   2.times do
     player_hand << deal_card(deck)
@@ -63,7 +59,6 @@ loop do
   prompt("Dealer has: #{dealer_hand[0].last} and unknown card")
   prompt("You have: " + show_hand(player_hand))
 
-  answer = ''
   loop do
     prompt("Player's turn: hit(h) or stay(s)?")
     answer = gets.chomp
@@ -73,14 +68,9 @@ loop do
   end
 
   if busted?(player_hand)
-    prompt("You have: " + show_hand(player_hand))
-    prompt("Dealer has: " + show_hand(dealer_hand))
     prompt "Player busted. Dealer wins!"
-    prompt "Play again? (y or n)"
-    answer = gets.chomp
-    break unless answer.downcase.start_with?('y')
   else
-    puts "You chose to stay!" # if player didn't bust, must have stayed to get here
+    puts "You chose to stay!"
   end
 
   loop do
@@ -92,16 +82,24 @@ loop do
   end
 
   if busted?(dealer_hand)
-    prompt "Game over. Player wins!"
-    prompt "Play again? (y or n)"
-    answer = gets.chomp
-    break unless answer.downcase.start_with?('y')
-  else
-    score(player_hand) > score(dealer_hand) ? prompt("Player wins!") : prompt("Dealer wins!")
-    prompt "Play again? (y or n)"
-    answer = gets.chomp
-    break unless answer.downcase.start_with?('y')
+    prompt "Dealer busted. Player wins!"
   end
+
+  unless busted?(player_hand) || busted?(dealer_hand)
+    score(player_hand) > score(dealer_hand) ? prompt("Player wins!") : prompt("Dealer wins!")
+  end
+
+  prompt("You had: " + show_hand(player_hand))
+  prompt("Dealer had: " + show_hand(dealer_hand))
+
+  loop do
+    prompt "Play again? (y or n)"
+    answer = gets.chomp
+    break if answer.downcase.start_with?('y', 'n')
+    prompt "Sorry, that's not a valid choice."
+  end
+
+  break if answer.downcase.start_with?('n')
 end
 
 prompt "Thanks for playing Twenty One! Good bye!"
