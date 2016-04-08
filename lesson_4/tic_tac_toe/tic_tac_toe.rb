@@ -61,8 +61,6 @@ end
 def detect_threat(line, brd, marker)
   if brd.values_at(*line).count(marker) == 2
     brd.select { |square, mark| line.include?(square) && mark == INITIAL_MARKER }.keys.first
-  else
-    nil
   end
 end
 
@@ -112,7 +110,7 @@ def alternate_player(player)
   player == :computer ? :player : :computer
 end
 
-wins = 0
+player_wins = 0
 computer_wins = 0
 answer = ''
 initialized_player = FIRST_MOVE
@@ -145,17 +143,17 @@ loop do
 
   if someone_won?(board)
     prompt "#{detect_winner(board)} won!"
-    wins += 1 if detect_winner(board) == :player
+    player_wins += 1 if detect_winner(board) == :player
     computer_wins += 1 if detect_winner(board) == :computer
   else
     prompt "It's a tie!"
   end
 
-  if wins == 5 || computer_wins == 5
-    prompt("We have a winner. Final score: #{wins}; Computer: #{computer_wins}")
+  if player_wins == 5 || computer_wins == 5
+    prompt("We have a winner. Final score: #{player_wins}; Computer: #{computer_wins}")
     break
   else
-    prompt("The current score is: #{wins}; Computer: #{computer_wins}.")
+    prompt("The current score is: #{player_wins}; Computer: #{computer_wins}.")
   end
 
   loop do
